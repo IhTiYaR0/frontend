@@ -75,7 +75,12 @@ if (form) {
       });
       if (!response.ok) {
         const data = await response.json().catch(() => ({}));
-        throw new Error(data.message || (response.status === 400 ? "Введите логин и пароль." : "Не удалось зарегистрироваться. Попробуйте ещё раз."));
+        const fallback = response.status === 409
+          ? "Такой пользователь уже существует"
+          : response.status === 400
+            ? "Введите логин и пароль."
+            : "Не удалось зарегистрироваться. Попробуйте ещё раз.";
+        throw new Error(typeof data.message === "string" && data.message.trim() ? data.message : fallback);
       }
       registerForm.hidden = true;
       document.getElementById("register-success").hidden = false;
