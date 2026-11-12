@@ -1,5 +1,6 @@
 const API_BASE = "http://localhost:8080";
 const form = document.getElementById("login-form");
+const registerForm = document.getElementById("register-form");
 
 if (form) {
   const loginInput = document.getElementById("login");
@@ -41,6 +42,49 @@ if (form) {
     } finally {
       submit.disabled = false;
       submit.textContent = "Войти";
+    }
+  });
+} else if (registerForm) {
+  const login = document.getElementById("login");
+  const password = document.getElementById("password");
+  const notice = document.getElementById("notice");
+  const submit = document.getElementById("submit");
+
+  document.getElementById("toggle-password").addEventListener("click", (event) => {
+    const show = password.type === "password";
+    password.type = show ? "text" : "password";
+    event.currentTarget.textContent = show ? "Скрыть" : "Показать";
+    event.currentTarget.setAttribute("aria-label", show ? "Скрыть пароль" : "Показать пароль");
+  });
+
+  registerForm.addEventListener("submit", async (event) => {
+    event.preventDefault();
+    notice.hidden = true;
+    if (!login.value.trim() || !password.value) {
+      notice.textContent = "Введите логин и пароль.";
+      notice.hidden = false;
+      return;
+    }
+    submit.disabled = true;
+    submit.textContent = "Регистрируем…";
+    try {
+      const response = await fetch(`${API_BASE}/register`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ login: login.value.trim(), password: password.value }),
+      });
+      if (!response.ok) {
+        const data = await response.json().catch(() => ({}));
+        throw new Error(data.message || (response.status === 400 ? "Введите логин и пароль." : "Не удалось зарегистрироваться. Попробуйте ещё раз."));
+      }
+      registerForm.hidden = true;
+      document.getElementById("register-success").hidden = false;
+    } catch (error) {
+      notice.textContent = error instanceof TypeError ? "Не удалось подключиться к серверу. Попробуйте позже." : error.message;
+      notice.hidden = false;
+    } finally {
+      submit.disabled = false;
+      submit.textContent = "Зарегистрироваться";
     }
   });
 } else {

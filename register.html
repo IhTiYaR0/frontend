@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#101d3d" />
+  <title>Регистрация — GoLab</title>
+  <link rel="stylesheet" href="style.css" />
+  <script src="app.js" defer></script>
+</head>
+<body class="auth-page">
+  <main class="auth-shell">
+    <section class="auth-intro">
+      <a class="brand" href="index.html"><span class="logo-mark" aria-hidden="true">G</span> GoLab</a>
+      <div class="intro-copy"><p class="intro-kicker">Ваше пространство</p><h1>Добро пожаловать в GoLab.</h1><p>Создайте аккаунт, чтобы начать работу.</p></div>
+      <span class="intro-bottom">GoLab</span>
+    </section>
+    <section class="form-side" aria-labelledby="register-title">
+      <div class="form-wrap">
+        <h2 id="register-title">Создать аккаунт</h2>
+        <p class="subtitle">Придумайте логин и пароль.</p>
+        <form id="register-form">
+          <label for="login">Логин</label>
+          <input id="login" name="login" type="text" autocomplete="username" spellcheck="false" required maxlength="50" />
+          <label for="password">Пароль</label>
+          <div class="password-wrap"><input id="password" name="password" type="password" autocomplete="new-password" required maxlength="50" /><button type="button" id="toggle-password" class="toggle-pass" aria-label="Показать пароль">Показать</button></div>
+          <div class="notice" id="notice" role="alert" hidden></div>
+          <button id="submit" class="button primary" type="submit">Зарегистрироваться</button>
+        </form>
+        <div id="register-success" role="status" hidden>
+          <p>Аккаунт создан. Теперь вы можете войти.</p>
+          <a class="button primary" href="index.html">Войти</a>
+        </div>
+        <p class="auth-switch">Уже есть аккаунт? <a href="index.html">Войти</a></p>
+      </div>
+    </section>
+  </main>
+</body>
+</html>
