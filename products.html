@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="theme-color" content="#f5f7fb">
+<title>Каталог — GoLab</title><link rel="stylesheet" href="style.css"><script src="products.js" defer></script>
+</head>
+<body class="site-page">
+<header class="site-header"><div class="header-inner"><a class="brand dark-brand" href="dashboard.html"><span class="logo-mark" aria-hidden="true">G</span> GoLab</a><nav aria-label="Основная навигация"><a href="dashboard.html">Главная</a><a href="users.html">Пользователи</a><a href="products.html" aria-current="page">Каталог</a></nav></div></header>
+<main class="page-content catalog"><div class="catalog-heading"><div><h1>Техника на каждый день.</h1><p class="page-description">Смартфоны, ноутбуки и аксессуары.</p></div><label class="catalog-search" for="product-search">Найти товар<input id="product-search" type="search" placeholder="Название товара" autocomplete="off"></label></div>
+<div class="catalog-toolbar"><p id="product-count" role="status">Загрузка…</p><label for="product-sort">Сортировка<select id="product-sort"><option value="default">По умолчанию</option><option value="asc">Сначала дешевле</option><option value="desc">Сначала дороже</option></select></label></div>
+<p id="products-status" role="status">Загружаем товары…</p><button id="products-retry" type="button" class="button secondary" hidden>Попробовать снова</button><div id="products-grid" class="products-grid" aria-label="Товары"></div>
+</main>
+</body></html>
