@@ -6,6 +6,7 @@ const sort = document.getElementById('product-sort');
 const retry = document.getElementById('products-retry');
 const priceFormat = new Intl.NumberFormat('ru-KZ', { style: 'currency', currency: 'KZT', maximumFractionDigits: 0 });
 let products = [];
+let catalogRequest = 0;
 function renderProducts() {
   const query = search.value.trim().toLocaleLowerCase('ru');
   const visible = products.filter(p => p.Name.toLocaleLowerCase('ru').includes(query));
@@ -29,15 +30,18 @@ function renderProducts() {
   }
 }
 async function loadProducts() {
+  const request = ++catalogRequest;
   status.hidden = false; status.textContent = 'Загружаем товары…'; retry.hidden = true;
   count.textContent = 'Загрузка…'; grid.replaceChildren();
   try {
     const response = await fetch('http://localhost:8080/products');
     if (!response.ok) throw new Error();
     const data = await response.json();
+    if (request !== catalogRequest) return;
     if (!Array.isArray(data) || !data.every(p => p && typeof p.Name === 'string' && Number.isFinite(p.Price))) throw new Error();
     products = data; renderProducts();
   } catch {
+    if (request !== catalogRequest) return;
     count.textContent = 'Каталог недоступен';
     status.textContent = 'Не удалось загрузить товары. Попробуйте ещё раз.';
     retry.hidden = false;
@@ -85,7 +89,8 @@ addForm.addEventListener('submit', async event => {
     const data = await response.json().catch(() => null);
     if (!response.ok) throw new Error(data?.message || (response.status === 400 ? 'Проверьте название и цену продукта.' : 'Не удалось добавить продукт. Попробуйте ещё раз.'));
     if (!data || typeof data.Name !== 'string' || !Number.isFinite(data.Price)) throw new Error('Сервер вернул неверный ответ. Обновите каталог перед повторной попыткой.');
-    products.push(data);
+    catalogRequest++;
+    products = [data, ...products.filter(product => product.ID !== data.ID)];
     search.value = '';
     sort.value = 'default';
     retry.hidden = true;
