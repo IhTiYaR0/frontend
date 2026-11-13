@@ -47,3 +47,58 @@ search.addEventListener('input', renderProducts);
 sort.addEventListener('change', renderProducts);
 retry.addEventListener('click', loadProducts);
 loadProducts();
+
+const dialog = document.getElementById('product-dialog');
+const addForm = document.getElementById('add-product-form');
+const nameInput = document.getElementById('product-name');
+const priceInput = document.getElementById('product-price');
+const addError = document.getElementById('add-product-error');
+const saveButton = document.getElementById('save-product');
+let savingProduct = false;
+document.getElementById('open-product-dialog').addEventListener('click', () => {
+  addError.hidden = true;
+  dialog.showModal();
+});
+function closeProductDialog() { if (!savingProduct) dialog.close(); }
+document.getElementById('close-product-dialog').addEventListener('click', closeProductDialog);
+document.getElementById('cancel-product').addEventListener('click', closeProductDialog);
+dialog.addEventListener('cancel', event => { if (savingProduct) event.preventDefault(); });
+addForm.addEventListener('submit', async event => {
+  event.preventDefault();
+  if (savingProduct) return;
+  const Name = nameInput.value.trim();
+  const Price = Number(priceInput.value);
+  addError.hidden = true;
+  if (!Name || !Number.isSafeInteger(Price) || Price <= 0) {
+    addError.textContent = 'Укажите название и целую цену больше нуля.';
+    addError.hidden = false;
+    return;
+  }
+  savingProduct = true;
+  saveButton.disabled = true;
+  saveButton.textContent = 'Добавляем…';
+  try {
+    const response = await fetch('http://localhost:8080/add-product', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ Name, Price }),
+    });
+    const data = await response.json().catch(() => null);
+    if (!response.ok) throw new Error(data?.message || (response.status === 400 ? 'Проверьте название и цену продукта.' : 'Не удалось добавить продукт. Попробуйте ещё раз.'));
+    if (!data || typeof data.Name !== 'string' || !Number.isFinite(data.Price)) throw new Error('Сервер вернул неверный ответ. Обновите каталог перед повторной попыткой.');
+    products.push(data);
+    search.value = '';
+    sort.value = 'default';
+    retry.hidden = true;
+    renderProducts();
+    document.getElementById('product-feedback').textContent = `Продукт «${data.Name}» добавлен.`;
+    addForm.reset();
+    dialog.close();
+  } catch (error) {
+    addError.textContent = error instanceof TypeError ? 'Нет связи с сервером. Проверьте подключение и попробуйте ещё раз.' : error.message;
+    addError.hidden = false;
+  } finally {
+    savingProduct = false;
+    saveButton.disabled = false;
+    saveButton.textContent = 'Добавить';
+  }
+});
